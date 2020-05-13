@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.9)
 project(libgts)
 set(TARGET_LIB "gts")
 
+add_subdirectory(Testcases)
+
+set(SRCS
+	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/AnalysisChroma.cc"
+)
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Analyzer")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Classifier")
+
 set(COMMON_WARNINGS					"-Wall")
 
 set(CMAKE_CXX_FLAGS_DEBUG           "-g ${COMMON_WARNINGS}")
