@@ -3,18 +3,22 @@
 namespace ChordLibrary
 {
 
-const ChordBase *chords[] = {
-	new Chord3("maj",0, 0,4,7),
-	new Chord3("min",0, 0,3,7),
-	new Chord3("dim",0, 0,3,6),
-	new Chord3("aug",0, 0,4,8),
-	new Chord3("sus",2, 0,2,7), // sus2
-	new Chord3("sus",4, 0,5,7), // sus4
-	new Chord7("maj",7, 0,4,7,11), // maj7
-	new Chord7("min",7, 0,3,7,10), // min7
-	new Chord7("dom",7, 0,4,7,10), // dom7
+const ChordBase *chordEntry[] = {
+	new Chord3(Chord_Maj,0, 0,4,7, true),
+	new Chord3(Chord_Min,0, 0,3,7, true),
+	new Chord3(Chord_Dim,0, 0,3,6, true),
+	new Chord3(Chord_Aug,0, 0,4,8, true),
+	new Chord3(Chord_Sus,2, 0,2,7, false), // sus2
+	new Chord3(Chord_Sus,4, 0,5,7, false), // sus4
+	new Chord7(Chord_Maj,7, 0,4,7,11, false), // maj7
+	new Chord7(Chord_Min,7, 0,3,7,10, true), // min7
+	new Chord7(Chord_Dom,7, 0,4,7,10, true), // dom7
 };
 
-const int chordsCount = 9;
+const int chordEntryCount = 9;
+
+const char *qualityName[Chord_Quality_Max] = {
+	"maj", "min", "dim", "aug", "sus", "dom"
+};
 
 }
