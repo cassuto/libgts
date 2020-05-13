@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdlib>
+#include <algorithm>
 #include "gts_error.h"
 #include "kiss_fft.h"
 #include "IIR-Filter.h"
@@ -81,10 +82,12 @@ const std::vector<double> &AnalysisChroma::downSample(const std::vector<double> 
 
 int AnalysisChroma::process(const std::vector<double> &input)
 {
-	if(input.size() > m_bufferSize) {
+	const int fs = 11025; // Hz
+
+	if(input.size() != m_bufferSize) {
 		return -E_BUFFER_SIZE;
 	}
-	const std::vector<double> &samples = downSample(input, m_sampleRate/11025);
+	const std::vector<double> &samples = downSample(input, m_sampleRate/fs);
 
 	// apply hamming window
 	for (int i = 0;i < m_bufferSize; i++) {
@@ -92,7 +95,9 @@ int AnalysisChroma::process(const std::vector<double> &input)
 		m_fftIn[i].i = 0.0;
 	}
 
-	/// calculate magnitude spectrum
+	//************************************************************
+	// calculate magnitude spectrum
+	//************************************************************
 
 	kiss_fft(m_fftCfg, m_fftIn, m_fftOut);
 
@@ -106,8 +111,30 @@ int AnalysisChroma::process(const std::vector<double> &input)
 		m_spectrum[i] = std::sqrt(m_spectrum[i]);
 	}
 
-	/// calculate chroma vector
+	//************************************************************
+	// calculate chroma vector
+	//************************************************************
 
+	// dF = Fs/L
+	const double dF = double(fs) / double(m_bufferSize);
+
+	for (int n = 0; n < 12; n++) {
+		m_chromaVector[n] = 0.0;
+		for (int phi = 1; phi <= 2; phi++) {
+			for (int h = 1; h <= 2; h++) {
+				int kc = round((m_noteFreqs[n] * phi * h) / dF); // (2)
+				int k0 = kc - (2*h);
+				int k1 = kc + (2*h);
+
+				double m = 0.0;
+				for (int k = k0; k < k1; k++) {
+					m = std::max(m, m_spectrum[k]);
+				}
+
+				m_chromaVector[n] += (m / (double) h);
+			}
+		}
+	}
 
 	return 0;
 }

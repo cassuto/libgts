@@ -2,6 +2,7 @@
 #define ANALYSISCHROMA_H_
 
 #include <vector>
+#include <cmath>
 #include "kiss_fft.h"
 
 class AnalysisChroma
@@ -22,6 +23,10 @@ private:
     void makeFFTWindow(int size);
     void makeBuffer(int size);
     const std::vector<double> &downSample(const std::vector<double> &samples, int factor);
+
+    inline double round (double val) {
+        return std::floor(val + 0.5);
+    }
 
 protected:
     int m_bufferSize, m_sampleRate;
