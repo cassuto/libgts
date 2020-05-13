@@ -7,6 +7,7 @@ add_subdirectory(Testcases)
 set(SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/AnalysisChroma.cc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/IIR-Filter.cc"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/FFT/kiss_fft.c"
 )
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Analyzer")
