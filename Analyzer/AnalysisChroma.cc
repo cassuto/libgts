@@ -1,9 +1,12 @@
 #include <cmath>
 #include "AnalysisChroma.h"
 
-AnalysisChroma::AnalysisChroma()
+AnalysisChroma::AnalysisChroma(int sampleSize, int sampleRate)
+	: m_sampleSize(sampleSize),
+	  m_sampleRate(sampleRate)
 {
 	makeNoteFreqTable();
+	makeFFTWindow(sampleSize);
 }
 AnalysisChroma::~AnalysisChroma()
 {
@@ -19,7 +22,16 @@ void AnalysisChroma::makeNoteFreqTable()
 	}
 }
 
-int AnalysisChroma::process(double *samples, int size, int sampleRate)
+void AnalysisChroma::makeFFTWindow(int size)
+{
+	m_fftWindow.resize (size);
+	// Hamming window
+	for (int n = 0; n < size;n++) {
+		m_fftWindow[n] = 0.54 - 0.46 * cos(2*M_PI * (double(n) / double(size)));
+	}
+}
+
+int AnalysisChroma::process(double *samples)
 {
 	return 1;
 }
