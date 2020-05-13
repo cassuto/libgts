@@ -8,6 +8,8 @@ set(SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/AnalysisChroma.cc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/IIR-Filter.cc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/FFT/kiss_fft.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Classifier/ChordClassifier.cc"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Classifier/ChordLibrary.cc"
 )
 
 include_directories(

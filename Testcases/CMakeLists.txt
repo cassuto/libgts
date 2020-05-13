@@ -13,3 +13,21 @@ include_directories(
 add_executable(${PROJECT_NAME} ${SRCS})
 
 target_link_libraries(${PROJECT_NAME} gts)
+
+#
+# classifier
+#
+
+project(testcase-classifier)
+
+set(SRCS
+	"${CMAKE_CURRENT_SOURCE_DIR}/testcase-classifier.cc"
+)
+
+include_directories(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../classifier"
+)
+
+add_executable(${PROJECT_NAME} ${SRCS})
+
+target_link_libraries(${PROJECT_NAME} gts)
