@@ -10,8 +10,12 @@ set(SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/FFT/kiss_fft.c"
 )
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Analyzer")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Classifier")
+include_directories(
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/FFT"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Classifier"
+)
 
 set(COMMON_WARNINGS					"-Wall")
 
