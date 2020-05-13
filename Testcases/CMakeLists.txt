@@ -5,11 +5,11 @@ set(SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/testcase-analyzer.cc"
 )
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Analyzer")
-
-set(COMMON_WARNINGS					"-Wall")
-set(CMAKE_CXX_FLAGS_DEBUG           "-g ${COMMON_WARNINGS}")
-set(CMAKE_CXX_FLAGS_RELEASE         "-O2 ${COMMON_WARNINGS}")
-set(CMAKE_CXX_FLAGS_PROFILE         "-O2 -pg ${COMMON_WARNINGS}")
+include_directories(
+    "${CMAKE_CURRENT_SOURCE_DIR}/../Analyzer"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../Analyzer/FFT"
+)
 
 add_executable(${PROJECT_NAME} ${SRCS})
+
+target_link_libraries(${PROJECT_NAME} gts)

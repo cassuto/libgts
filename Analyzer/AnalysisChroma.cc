@@ -6,11 +6,9 @@
 #include "IIR-Filter.h"
 #include "AnalysisChroma.h"
 
-AnalysisChroma::AnalysisChroma(int bufferSize, int sampleRate, int step)
+AnalysisChroma::AnalysisChroma(int bufferSize, int sampleRate)
 	: m_bufferSize(bufferSize),
-	  m_sampleRate(sampleRate),
-	  m_samplesRecv(0),
-	  m_step(step)
+	  m_sampleRate(sampleRate)
 {
 	makeNoteFreqTable();
 	makeFFTWindow(bufferSize);
@@ -69,8 +67,8 @@ const std::vector<double> &AnalysisChroma::downSample(const std::vector<double> 
 	size_t size = samples.size();
 	std::vector<double> output (size);
 
-	static const float a[3] = {0.0f, -0.0000, 0.1716};
-	static const float b[3] = {0.2929, 0.5858, 0.2929};
+	static const double a[3] = {0.0f, -0.0000, 0.1716};
+	static const double b[3] = {0.2929, 0.5858, 0.2929};
 	IIR_Filter_2ord filter(a,b);
 	filter.apply(samples, output, size);
 
@@ -80,6 +78,7 @@ const std::vector<double> &AnalysisChroma::downSample(const std::vector<double> 
 	return m_dsBuffer;
 }
 
+#include <cstdio>
 int AnalysisChroma::process(const std::vector<double> &input)
 {
 	const int fs = 11025; // Hz
@@ -131,7 +130,7 @@ int AnalysisChroma::process(const std::vector<double> &input)
 					m = std::max(m, m_spectrum[k]);
 				}
 
-				m_chromaVector[n] += (m / (double) h);
+				m_chromaVector[n] += m / double(h);
 			}
 		}
 	}

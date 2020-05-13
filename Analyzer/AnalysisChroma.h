@@ -8,7 +8,7 @@
 class AnalysisChroma
 {
 public:
-    AnalysisChroma(int sampleSize=8192, int sampleRate=44100, int step=4096);
+    AnalysisChroma(int sampleSize=8192, int sampleRate=44100);
     ~AnalysisChroma();
     
     /**
@@ -17,6 +17,10 @@ public:
      * @return status code.
      */
     int process(const std::vector<double> &samples);
+
+    inline const std::vector<double> &chromaVector() const {
+    	return m_chromaVector;
+    }
 
 private:
     void makeNoteFreqTable();
@@ -30,8 +34,6 @@ private:
 
 protected:
     int m_bufferSize, m_sampleRate;
-    size_t m_samplesRecv;
-    size_t m_step;
     double m_noteFreqs[12];
     std::vector<double> m_fftWindow;
     std::vector<double> m_dsBuffer;
