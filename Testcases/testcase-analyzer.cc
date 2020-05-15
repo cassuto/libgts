@@ -51,19 +51,17 @@ int main()
 	printf("total %d samples, frameTime = %lf\n", num_smpls, double(frameSize) / sampleRate);
 
 	double *smpl = short2DoubleArray((short*)buff, num_smpls, 0); // LittleEndian only
-	std::vector<double> buffer;
 
 	for (int s = 0; s < num_smpls; s += frameSize) {
 		int len = std::min(int(num_smpls - s), frameSize);
 		AnalysisChroma c(len, sampleRate);
 
-		buffer.assign(smpl+s, smpl+s+len);
-		int rc = c.process(buffer);
+		int rc = c.process(smpl+s);
 		if (!rc)
 		{
-			const std::vector<double> &chroma = c.chromaVector();
+			const double *chroma = c.chromaVector();
 
-			for (size_t i = 0; i < chroma.size(); ++i) {
+			for (size_t i = 0; i < 12; ++i) {
 				printf("%lf ", chroma[i]);
 			}
 			printf("\n");
