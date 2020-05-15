@@ -7,7 +7,7 @@
 #include "AnalysisChroma.h"
 
 AnalysisChroma::AnalysisChroma(int bufferSize, int sampleRate)
-	: m_bufferSize(bufferSize),
+	: m_windowSize(bufferSize),
 	  m_sampleRate(sampleRate)
 {
 	makeNoteFreqTable();
@@ -53,8 +53,7 @@ void AnalysisChroma::makeBuffer(int size)
 	// make magnitude spectrum
 	m_spectrum.resize((size/2)+1);
 	// make chroma vector
-	m_chromaVector.resize(12);
-	std::fill(m_chromaVector.begin(), m_chromaVector.end(), 0.0);
+	std::fill(m_chromaVector, m_chromaVector + 12, 0.0);
 }
 
 /**
@@ -62,9 +61,9 @@ void AnalysisChroma::makeBuffer(int size)
  * the result is stored in a global buffer.
  * @return reference to the global buffer.
  */
-const std::vector<double> &AnalysisChroma::downSample(const std::vector<double> &samples, int factor)
+const std::vector<double> &AnalysisChroma::downSample(const double input[], int size, int factor)
 {
-	size_t size = samples.size();
+	std::vector<double> samples(input, input + size);
 	std::vector<double> output (size);
 
 	static const double a[3] = {0.0f, -0.0000, 0.1716};
@@ -77,19 +76,14 @@ const std::vector<double> &AnalysisChroma::downSample(const std::vector<double> 
 	}
 	return m_dsBuffer;
 }
-
-#include <cstdio>
-int AnalysisChroma::process(const std::vector<double> &input)
+int AnalysisChroma::process(const double input[])
 {
 	const int fs = 11025; // Hz
 
-	if(input.size() != m_bufferSize) {
-		return -E_BUFFER_SIZE;
-	}
-	const std::vector<double> &samples = downSample(input, m_sampleRate/fs);
+	const std::vector<double> &samples = downSample(input, m_windowSize, m_sampleRate/fs);
 
 	// apply hamming window
-	for (int i = 0;i < m_bufferSize; i++) {
+	for (int i = 0;i < m_windowSize; i++) {
 		m_fftIn[i].r = samples[i] * m_fftWindow[i];
 		m_fftIn[i].i = 0.0;
 	}
@@ -101,12 +95,12 @@ int AnalysisChroma::process(const std::vector<double> &input)
 	kiss_fft(m_fftCfg, m_fftIn, m_fftOut);
 
 	// calculate magnitude values |Fn|
-	for (int i = 0; i < (m_bufferSize / 2) + 1; i++) {
+	for (int i = 0; i < (m_windowSize / 2) + 1; i++) {
 		m_spectrum[i] = std::sqrt(std::pow(m_fftOut[i].r, 2) + std::pow(m_fftOut[i].i, 2));
 	}
 
 	// square root of magnitude is used to reduce the amplitude difference
-	for (int i = 0; i < (m_bufferSize / 2) + 1; i++) {
+	for (int i = 0; i < (m_windowSize / 2) + 1; i++) {
 		m_spectrum[i] = std::sqrt(m_spectrum[i]);
 	}
 
@@ -115,7 +109,7 @@ int AnalysisChroma::process(const std::vector<double> &input)
 	//************************************************************
 
 	// dF = Fs/L
-	const double dF = double(fs) / double(m_bufferSize);
+	const double dF = double(fs) / double(m_windowSize);
 
 	for (int n = 0; n < 12; n++) {
 		m_chromaVector[n] = 0.0;

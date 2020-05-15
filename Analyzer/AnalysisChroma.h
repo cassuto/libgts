@@ -16,9 +16,9 @@ public:
      * @param samples	Target samples
      * @return status code.
      */
-    int process(const std::vector<double> &samples);
+    int process(const double samples[]);
 
-    inline const std::vector<double> &chromaVector() const {
+    inline const double *chromaVector() const {
     	return m_chromaVector;
     }
 
@@ -26,19 +26,19 @@ private:
     void makeNoteFreqTable();
     void makeFFTWindow(int size);
     void makeBuffer(int size);
-    const std::vector<double> &downSample(const std::vector<double> &samples, int factor);
+    const std::vector<double> &downSample(const double input[], int size, int factor);
 
     inline double round (double val) {
         return std::floor(val + 0.5);
     }
 
 protected:
-    int m_bufferSize, m_sampleRate;
+    int m_windowSize, m_sampleRate;
     double m_noteFreqs[12];
     std::vector<double> m_fftWindow;
     std::vector<double> m_dsBuffer;
     std::vector<double> m_spectrum;
-    std::vector<double> m_chromaVector;
+    double m_chromaVector[12];
 
     kiss_fft_cfg m_fftCfg;
 	kiss_fft_cpx* m_fftIn;
