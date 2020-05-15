@@ -11,7 +11,17 @@ class ChordClassifier
 public:
 	ChordClassifier();
 
-	void classify(std::vector<double> chromaVector);
+	void classify(const double chromaVector[]);
+
+	inline int root() const {
+		return m_root;
+	}
+	inline int quality() const {
+		return m_quality;
+	}
+	inline int intervals() const {
+		return m_intervals;
+	}
 
 private:
 	void makeBitmaskMatrix();

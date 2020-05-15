@@ -16,7 +16,7 @@ ChordClassifier::ChordClassifier()
 
 void ChordClassifier::makeBitmaskMatrix()
 {
-	std::memset(m_bitmask, sizeof m_bitmask, 0);
+	std::memset(m_bitmask, 0, sizeof m_bitmask);
 
 	int p = 0;
 	for (int n = 0; n < ChordLibrary::chordEntryCount; n++) {
@@ -58,28 +58,34 @@ double ChordClassifier::weightChord(const std::vector<double> &chroma, double bi
 	return std::sqrt (sum) / ((12 - N) * bias); // Formula (3)
 }
 
-void ChordClassifier::classify(std::vector<double> chromaVector)
+void ChordClassifier::classify(const double chromaVector[])
 {
+	std::vector<double> chroma(chromaVector, chromaVector + 12);
+
 	// remove some of the 5th note energy from chroma vector
 	for (int i = 0; i < 12; i++) {
 		int fifth = (i+7) % 12;
-		chromaVector[fifth] -= 0.1 * chromaVector[i];
-		chromaVector[fifth] = std::max(0.0, chromaVector[fifth]);
+		chroma[fifth] -= 0.1 * chroma[i];
+		chroma[fifth] = std::max(0.0, chroma[fifth]);
 	}
 
 	// compute weights of each chord
-	for (int p = 0; p < m_chordCount; ++p) {
-		const ChordLibrary::ChordBase *chd = ChordLibrary::chordEntry[p];
-		double bias = chd->ghostNoteFixup ? m_biasBeta : 1.0;
-		switch (chd->type()) {
-		case 3:
-			m_weight[p] = weightChord(chromaVector, m_bitmask[p], bias, 3);
-			break;
-		case 7:
-			m_weight[p] = weightChord(chromaVector, m_bitmask[p], bias, 4);
-			break;
-		default:
-			assert(0);
+	int p = 0;
+	for (int n = 0; n < ChordLibrary::chordEntryCount; n++) {
+		const ChordLibrary::ChordBase *chd = ChordLibrary::chordEntry[n];
+		for (int i = 0; i < 12; i++ ) {
+			double bias = chd->ghostNoteFixup ? m_biasBeta : 1.0;
+			switch (chd->type()) {
+			case 3:
+				m_weight[p] = weightChord(chroma, m_bitmask[p], bias, 3);
+				break;
+			case 7:
+				m_weight[p] = weightChord(chroma, m_bitmask[p], bias, 4);
+				break;
+			default:
+				assert(0);
+			}
+			++p;
 		}
 	}
 
@@ -95,6 +101,6 @@ void ChordClassifier::classify(std::vector<double> chromaVector)
 
 	// read out chord info
 	m_root = ans % 12;
-	m_quality = ChordLibrary::chordEntry[ans]->quality;
-	m_intervals = ChordLibrary::chordEntry[ans]->intervals;
+	m_quality = ChordLibrary::chordEntry[ans / 12]->quality;
+	m_intervals = ChordLibrary::chordEntry[ans / 12]->intervals;
 }
