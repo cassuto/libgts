@@ -18,7 +18,7 @@ const ChordBase *chordEntry[] = {
 const int chordEntryCount = 9;
 
 const char *qualityName[Chord_Quality_Max] = {
-	"maj", "min", "dim", "aug", "sus", "dom"
+	"maj", "m", "dim", "aug", "sus", "dom"
 };
 
 }
