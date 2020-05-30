@@ -18,6 +18,8 @@ include_directories(
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/FFT"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Classifier"
+	"$ENV{JAVA_HOME}/include/linux"
+	"$ENV{JAVA_HOME}/include"
 )
 
 set(COMMON_WARNINGS					"-Wall")
@@ -29,5 +31,4 @@ set(CMAKE_CXX_FLAGS_PROFILE         "-O2 -pg ${COMMON_WARNINGS}")
 set(CMAKE_MODULE_LINKER_FLAGS_PROFILE "-pg")
 set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "-pg")
 
-add_library(${TARGET_LIB} ${SRCS})
-add_library(${TARGET_LIB}d SHARED ${SRCS})
+add_library(${TARGET_LIB} SHARED ${SRCS})

@@ -20,6 +20,7 @@ double* short2DoubleArray(short* in, size_t len, bool scale) {
     return result;
 }
 
+#if 0
 int main()
 {
 	size_t len;
@@ -70,6 +71,7 @@ int main()
 	fclose(out);
 #endif
 }
+#endif
 
 JNIEXPORT void JNICALL Java_com_hongyu_jni_HelloJni_helloWorld(JNIEnv *env, jobject obj, jbyteArray buf, jint sampleSize)
 {
