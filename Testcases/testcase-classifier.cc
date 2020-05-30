@@ -38,6 +38,8 @@ double* short2DoubleArray(short* in, size_t len, bool scale) {
     return result;
 }
 
+#define DUMP_CHROMA
+
 int main()
 {
 	size_t len;
@@ -55,6 +57,10 @@ int main()
 
 	double *smpl = short2DoubleArray((short*)buff, num_smpls, 0); // LittleEndian only
 
+#ifdef DUMP_CHROMA
+	FILE *out = fopen("chroma.csv", "w");
+#endif
+
 	for (int s = 0; s < num_smpls; s += frameSize) {
 		int len = std::min(int(num_smpls - s), frameSize);
 		AnalysisChroma c(len, sampleRate);
@@ -69,7 +75,18 @@ int main()
 
 			double ts = double(s) / sampleRate;
 
+#ifdef DUMP_CHROMA
+			fprintf(out, "%lf ", ts);
+			for(int i=0;i<12;++i) {
+				fprintf(out, "%lf ", chroma[i]);
+			}
+			fprintf(out, "\n");
+#endif
 			printf("%lf %s %s %d\n", ts, notes[classifier.root()], ChordLibrary::qualityName[classifier.quality()], classifier.intervals());
 		}
 	}
+
+#ifdef DUMP_CHROMA
+	fclose(out);
+#endif
 }
