@@ -10,6 +10,7 @@ set(SRCS
 	"${CMAKE_CURRENT_SOURCE_DIR}/Analyzer/FFT/kiss_fft.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Classifier/ChordClassifier.cc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Classifier/ChordLibrary.cc"
+	"${CMAKE_CURRENT_SOURCE_DIR}/JNI/JNI.cc"
 )
 
 include_directories(
@@ -29,3 +30,4 @@ set(CMAKE_MODULE_LINKER_FLAGS_PROFILE "-pg")
 set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "-pg")
 
 add_library(${TARGET_LIB} ${SRCS})
+add_library(${TARGET_LIB}d SHARED ${SRCS})
