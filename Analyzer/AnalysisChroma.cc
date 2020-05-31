@@ -1,3 +1,6 @@
+// Based on the theory elaborated in
+// [1] Adam M. Stark, Mark D. Plumbley. Real-Time Chord Recognition for Live Performance[J]. ICMC 2009 
+//
 #include <cmath>
 #include <cstdlib>
 #include <algorithm>
@@ -7,17 +10,17 @@
 #include "AnalysisChroma.h"
 
 AnalysisChroma::AnalysisChroma(int bufferSize, int sampleRate)
-	: m_windowSize(bufferSize),
+	: m_windowSize(bufferSize/4),
 	  m_sampleRate(sampleRate)
 {
 	makeNoteFreqTable();
-	makeFFTWindow(bufferSize);
-	makeBuffer(bufferSize);
+	makeFFTWindow(m_windowSize);
+	makeBuffer(m_windowSize);
 
 	// create FFT library
-	m_fftIn = new kiss_fft_cpx[bufferSize];
-	m_fftOut = new kiss_fft_cpx[bufferSize];
-	m_fftCfg = kiss_fft_alloc(bufferSize,0,0,0);
+	m_fftIn = new kiss_fft_cpx[m_windowSize];
+	m_fftOut = new kiss_fft_cpx[m_windowSize];
+	m_fftCfg = kiss_fft_alloc(m_windowSize,0,0,0);
 }
 AnalysisChroma::~AnalysisChroma()
 {
@@ -30,7 +33,7 @@ AnalysisChroma::~AnalysisChroma()
 void AnalysisChroma::makeNoteFreqTable()
 {
 	const double f0 = 130.81278265; // Hz
-	// Fp = F0 * 2^(p/12) where p is the note in 12 semitones
+	// Fp = F0 * 2^(p/12) where p is the note in 12 semitones [1]
 	for (int i = 0; i < 12; i++) {
 		m_noteFreqs[i] = f0 * std::pow(2,double(i) / 12);
 	}
@@ -49,7 +52,7 @@ void AnalysisChroma::makeFFTWindow(int size)
 void AnalysisChroma::makeBuffer(int size)
 {
 	// make sample buffer
-	m_dsBuffer.resize(size / 4);
+	m_dsBuffer.resize(size);
 	// make magnitude spectrum
 	m_spectrum.resize((size/2)+1);
 	// make chroma vector
@@ -63,19 +66,20 @@ void AnalysisChroma::makeBuffer(int size)
  */
 const std::vector<double> &AnalysisChroma::downSample(const double input[], int size, int factor)
 {
-	std::vector<double> samples(input, input + size);
-	std::vector<double> output (size);
+	std::vector<double> samples(input, input + size*factor);
+	std::vector<double> output (size*factor);
 
 	static const double a[3] = {0.0f, -0.0000, 0.1716};
 	static const double b[3] = {0.2929, 0.5858, 0.2929};
 	IIR_Filter_2ord filter(a,b);
-	filter.apply(samples, output, size);
+	filter.apply(samples, output, size*factor);
 
-	for (int i = 0; i < size / factor; i++) {
+	for (int i = 0; i < size; i++) {
 		m_dsBuffer[i] = output[i * factor];
 	}
 	return m_dsBuffer;
 }
+
 int AnalysisChroma::process(const double input[])
 {
 	const int fs = 11025; // Hz
@@ -98,7 +102,7 @@ int AnalysisChroma::process(const double input[])
 	for (int i = 0; i < (m_windowSize / 2) + 1; i++) {
 		m_spectrum[i] = std::sqrt(std::pow(m_fftOut[i].r, 2) + std::pow(m_fftOut[i].i, 2));
 	}
-
+    
 	// square root of magnitude is used to reduce the amplitude difference
 	for (int i = 0; i < (m_windowSize / 2) + 1; i++) {
 		m_spectrum[i] = std::sqrt(m_spectrum[i]);
@@ -115,7 +119,7 @@ int AnalysisChroma::process(const double input[])
 		m_chromaVector[n] = 0.0;
 		for (int phi = 1; phi <= 2; phi++) {
 			for (int h = 1; h <= 2; h++) {
-				int kc = round((m_noteFreqs[n] * phi * h) / dF); // (2)
+				int kc = round((m_noteFreqs[n] * phi * h) / dF); // in [1] Formula (2)
 				int k0 = kc - (2*h);
 				int k1 = kc + (2*h);
 

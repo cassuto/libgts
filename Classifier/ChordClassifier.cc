@@ -1,3 +1,6 @@
+// Based on the theory elaborated in
+// [1] Adam M. Stark, Mark D. Plumbley. Real-Time Chord Recognition for Live Performance[J]. ICMC 2009 
+//
 #include <cmath>
 #include <cstring>
 #include <cassert>
@@ -6,7 +9,7 @@
 #include "ChordClassifier.h"
 
 ChordClassifier::ChordClassifier()
-	: m_biasBeta(1.06) // P87 Section 2.4
+	: m_biasBeta(1.06) // in [1] P87 Section 2.4
 {
 	m_chordCount = ChordLibrary::chordEntryCount * 12;
 	assert(m_chordCount <= MAX_N_CHORDS);
@@ -55,7 +58,7 @@ double ChordClassifier::weightChord(const std::vector<double> &chroma, double bi
 	for (int i = 0; i < 12; i++) {
 		sum = sum + ((1 - bitmask[i]) * (chroma[i]*chroma[i]));
 	}
-	return std::sqrt (sum) / ((12 - N) * bias); // Formula (3)
+	return std::sqrt (sum) / ((12 - N) * bias); // in [1] Formula (3)
 }
 
 void ChordClassifier::classify(const double chromaVector[])

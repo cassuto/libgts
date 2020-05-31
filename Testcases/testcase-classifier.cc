@@ -43,7 +43,7 @@ double* short2DoubleArray(short* in, size_t len, bool scale) {
 int main()
 {
 	size_t len;
-	char *buff = read_pcm("waves/g.pcm", &len);
+	char *buff = read_pcm("waves/clip3.wav", &len);
 	if(!buff) {
 		perror("open input");
 		return 1;
@@ -57,6 +57,7 @@ int main()
 
 	double *smpl = short2DoubleArray((short*)buff, num_smpls, 0); // LittleEndian only
 
+#if 0
 #ifdef DUMP_CHROMA
 	FILE *out = fopen("chroma.csv", "w");
 #endif
@@ -89,4 +90,20 @@ int main()
 #ifdef DUMP_CHROMA
 	fclose(out);
 #endif
+
+#else
+    AnalysisChroma c(num_smpls, sampleRate);
+
+    int rc = c.process(smpl);
+    if (!rc)
+    {
+        const double *chroma = c.chromaVector();
+
+        ChordClassifier classifier;
+        classifier.classify(chroma);
+        
+        printf("%s %s %d\n", notes[classifier.root()], ChordLibrary::qualityName[classifier.quality()], classifier.intervals());
+    }
+#endif
+    return 0;
 }
