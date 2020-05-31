@@ -13,7 +13,7 @@ static jstring getJstring(JNIEnv* env, const char* str) {
 
 static double* short2DoubleArray(short* in, size_t len, bool scale) {
     const double maxShort = 32767.0;
-    double* result = new double[len * sizeof(double))];
+    double* result = new double[len * sizeof(double)];
     double* curOut = result;
     for (size_t i = 0; i < len; i++) {
         *curOut = *in;
