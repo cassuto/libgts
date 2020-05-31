@@ -15,6 +15,46 @@ extern "C" {
 JNIEXPORT jboolean JNICALL Java_com_libgts_JNI_analysisAudioClip
   (JNIEnv *, jobject, jbyteArray, jint);
 
+/*
+ * Class:     com_libgts_JNI
+ * Method:    getRoot
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_libgts_JNI_getRoot
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_libgts_JNI
+ * Method:    getRootName
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_libgts_JNI_getRootName
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_libgts_JNI
+ * Method:    getQuality
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_libgts_JNI_getQuality
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_libgts_JNI
+ * Method:    getQualityName
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_libgts_JNI_getQualityName
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_libgts_JNI
+ * Method:    getInterval
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_com_libgts_JNI_getInterval
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
