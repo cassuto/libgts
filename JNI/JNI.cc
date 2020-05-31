@@ -30,6 +30,9 @@ JNIEXPORT jboolean JNICALL Java_com_libgts_JNI_analysisAudioClip(JNIEnv *env, jo
 {
     jbyte *bytes = env->GetByteArrayElements(buf, 0);
     jsize len = env->GetArrayLength(buf);
+    if (len<=0) {
+	    return JNI_FALSE;
+    }
     double *samples = short2DoubleArray((short *)bytes, (size_t)sampleSize, 1.0);
 	const int sampleRate = 44100;
     
